@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from 'aldeed:simple-schema';
 /* eslint-enable import/no-unresolved */
 
 export default ({ Meteor, Mongo, BaseModel, LinkableModel, ServerTime }) => {
@@ -41,7 +41,6 @@ export default ({ Meteor, Mongo, BaseModel, LinkableModel, ServerTime }) => {
                 }
                 return undefined;
             },
-            index: 1,
             denyUpdate: true,
         },
         createdAt: {
@@ -65,15 +64,16 @@ export default ({ Meteor, Mongo, BaseModel, LinkableModel, ServerTime }) => {
         * Get the User instance of the account which created the like
         * @returns {User} The user who created the like
         */
-        user() {
-            return Meteor.users.findOne({ _id: this.userId });
+        async user() {
+            return Meteor.users.findOneAsync({ _id: this.userId });
         }
         /**
         * Check if the user has already liked the linked object
         * @returns {[[Type]]} [[Description]]
         */
-        isDuplicate() {
-            return !!LikesCollection.findOne({ userId: this.userId, linkedObjectId: this.linkedObjectId });
+        async isDuplicate() {
+            const like = await LikesCollection.findOne({ userId: this.userId, linkedObjectId: this.linkedObjectId });
+            return !!like
         }
     }
 

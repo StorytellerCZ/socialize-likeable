@@ -15,13 +15,16 @@ LikesCollection.allow({
 LikesCollection.after.insert(function afterInsert(userId, like) {
     // after a successful like, increment the linked object's likeCount property
     const collection = this.transform().getCollectionForParentLink();
-    userId && collection && collection.update({ _id: like.linkedObjectId }, { $inc: { likeCount: 1 } });
+    userId && collection && collection.updateAsync({ _id: like.linkedObjectId }, { $inc: { likeCount: 1 } });
 });
 
 LikesCollection.after.remove(function afterRemove(userId, like) {
     // if the user unlikes an object, decrement the linked objects likeCount property
     const collection = this.transform().getCollectionForParentLink();
-    userId && collection && collection.update({ _id: like.linkedObjectId }, { $inc: { likeCount: -1 } });
+    userId && collection && collection.updateAsync({ _id: like.linkedObjectId }, { $inc: { likeCount: -1 } });
 });
+
+LikesCollection.createIndexAsync({ userId: 1 })
+LikesCollection.createIndexAsync({ userId: 1, linkedObjectId: 1 })
 
 export { Like, LikeableModel, LikesCollection };

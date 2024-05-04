@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from 'aldeed:simple-schema';
 /* eslint-enable import/no-unresolved */
 
 
@@ -25,10 +25,10 @@ export default ({ Meteor, LinkParent, LikesCollection, Like }) => {
         /**
         * Remove a record from the likes collection that is linked to the model
         */
-        unlike() {
+        async unlike() {
             // find and then call call instance.remove() since client
             // is restricted to removing items by their _id
-            const like = LikesCollection.findOne({ userId: Meteor.userId(), linkedObjectId: this._id });
+            const like = LikesCollection.findOneAsync({ userId: Meteor.userId(), linkedObjectId: this._id });
             like && like.remove();
         }
 
@@ -57,9 +57,10 @@ export default ({ Meteor, LinkParent, LikesCollection, Like }) => {
         *                                     of the userId to check against
         * @returns {Boolean} Wheter the user likes the model or not
         */
-        isLikedBy(user) {
+        async isLikedBy(user) {
             const userId = user?._id || user;
-            return !!LikesCollection.findOne({ linkedObjectId: this._id, userId });
+            const like = awaitLikesCollection.findOneAsync({ linkedObjectId: this._id, userId });
+            return !!like
         }
     };
 
