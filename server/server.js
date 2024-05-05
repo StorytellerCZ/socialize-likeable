@@ -24,7 +24,11 @@ LikesCollection.after.remove(function afterRemove(userId, like) {
     userId && collection && collection.updateAsync({ _id: like.linkedObjectId }, { $inc: { likeCount: -1 } });
 });
 
-LikesCollection.createIndexAsync({ userId: 1 })
-LikesCollection.createIndexAsync({ userId: 1, linkedObjectId: 1 })
+try {
+    LikesCollection.createIndexAsync({ userId: 1 })
+    LikesCollection.createIndexAsync({ userId: 1, linkedObjectId: 1 })
+} catch (e) {
+    console.debug('Failed to create indexes for the likes collection.')
+}
 
 export { Like, LikeableModel, LikesCollection };
