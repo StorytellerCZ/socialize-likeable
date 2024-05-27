@@ -19,17 +19,32 @@ export default ({ Meteor, LinkParent, LikesCollection, Like }) => {
         * Add a record to the likes collection which is linked to the model
         */
         like() {
+            if (Meteor.isServer) {
+                this.likeAsync()
+            }
             new Like(this.getLinkObject()).save();
+        }
+        async likeAsync() {
+            new Like(this.getLinkObject()).saveAsync();
         }
 
         /**
         * Remove a record from the likes collection that is linked to the model
         */
-        async unlike() {
+        unlike() {
+            if (Meteor.isServer) {
+                return this.unlikeAsync()
+            }
             // find and then call call instance.remove() since client
             // is restricted to removing items by their _id
-            const like = LikesCollection.findOneAsync({ userId: Meteor.userId(), linkedObjectId: this._id });
+            const like = LikesCollection.findOne({ userId: Meteor.userId(), linkedObjectId: this._id });
             like && like.remove();
+        }
+        async unlikeAsync() {
+            // find and then call call instance.remove() since client
+            // is restricted to removing items by their _id
+            const like = await LikesCollection.findOneAsync({ userId: Meteor.userId(), linkedObjectId: this._id });
+            like && like.removeAsync();
         }
 
         /**
@@ -57,9 +72,17 @@ export default ({ Meteor, LinkParent, LikesCollection, Like }) => {
         *                                     of the userId to check against
         * @returns {Boolean} Wheter the user likes the model or not
         */
-        async isLikedBy(user) {
+        isLikedBy(user) {
+            if (Meteor.isServer) {
+                return this.isLikedByAsync(user)
+            }
             const userId = user?._id || user;
-            const like = awaitLikesCollection.findOneAsync({ linkedObjectId: this._id, userId });
+            const like = LikesCollection.findOne({ linkedObjectId: this._id, userId });
+            return !!like
+        }
+        async isLikedByAsync(user) {
+            const userId = user?._id || user;
+            const like = await LikesCollection.findOneAsync({ linkedObjectId: this._id, userId });
             return !!like
         }
     };
