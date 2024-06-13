@@ -44,7 +44,7 @@ export default ({ Meteor, LinkParent, LikesCollection, Like }) => {
             // find and then call call instance.remove() since client
             // is restricted to removing items by their _id
             const like = await LikesCollection.findOneAsync({ userId: Meteor.userId(), linkedObjectId: this._id });
-            like && like.removeAsync();
+            like && like.remove();
         }
 
         /**
