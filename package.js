@@ -12,7 +12,7 @@ Package.onUse(function _(api) {
     api.use([
         'socialize:user-blocking@2.0.0',
         'reywood:publish-composite@1.8.9',
-        'aldeed:simple-schema@1.13.1 || 2.0.0'
+        'aldeed:simple-schema@2.0.0 || 3.0.0'
     ]);
 
     api.imply('socialize:user-blocking');
